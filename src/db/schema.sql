@@ -1,0 +1,21 @@
+-- CREATE TABLE profile(
+-- id INTEGER PRIMARY KEY AUTOINCREMENT,
+-- name TEXT NOT NULL,
+-- location TEXT,
+-- image_url TEXT,
+-- headline TEXT,
+-- bio TEXT
+-- );
+-- INSERT INTO profile (name, location, image_url, headline, bio)
+-- VALUES (
+--   'Erica Thompson',
+--   'New York, NY',
+--   'https://placekitten.com/300/300',
+--   'Full-Stack Developer and Mentor',
+--   'I love creating beautiful, accessible interfaces, mentoring junior developers, and building tools that help people thrive.'
+-- );
+-- UPDATE profile
+-- SET image_url = "https://picsum.photos/200/300"
+-- WHERE id = 1;
+SELECT *
+FROM profile;

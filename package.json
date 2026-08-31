@@ -1,0 +1,44 @@
+{
+    "name": "profilekit",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev",
+        "lint": "next lint",
+        "seed": "tsx scripts/seed.ts",
+        "start": "next start",
+        "db:generate": "npx drizzle-kit generate",
+        "db:migrate": "npx drizzle-kit migrate",
+        "db:push": "npx drizzle-kit push",
+        "db:studio": "npx drizzle-kit studio"
+    },
+    "dependencies": {
+        "@hookform/resolvers": "^5.0.1",
+        "@libsql/client": "^0.15.7",
+        "dotenv": "^16.5.0",
+        "drizzle-orm": "^0.43.1",
+        "next": "15.3.2",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-hook-form": "^7.56.4",
+        "react-hot-toast": "^2.5.2",
+        "yup": "^1.6.1"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "autoprefixer": "^10.4.21",
+        "drizzle-kit": "^0.31.1",
+        "eslint": "^9",
+        "eslint-config-next": "15.3.2",
+        "postcss": "^8.5.3",
+        "tailwindcss": "^4.1.7",
+        "tsx": "^4.19.4",
+        "typescript": "^5"
+    },
+    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
