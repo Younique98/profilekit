@@ -1,0 +1,25 @@
+# ProfileKit
+
+> A full-stack profile view and edit app with form validation, an API
+> route, and a simple relational schema, built with Next.js and Drizzle
+> ORM.
+
+ProfileKit demonstrates a clean full-stack architecture for a single-user
+CMS-style profile: a read-only display page, a pre-filled edit form with
+strong client-side validation, and a persistence layer backed by a
+relational database.
+
+## Key pages
+
+- [Home](https://profilekit.app/): Read-only profile display.
+- [Edit](https://profilekit.app/edit): Pre-filled edit form for updating
+  profile details.
+
+## Technical implementation
+
+- **Framework:** Next.js (App Router), TypeScript, Tailwind CSS
+- **Forms:** react-hook-form with Yup schema validation
+- **Data:** Drizzle ORM over a libSQL-compatible database
+- **API:** A Next.js route handler backing profile reads and writes
+
+Source and full documentation: https://github.com/Younique98/profilekit
