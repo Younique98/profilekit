@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { Edit } from '@/components/Edit'
+import { getCurrentUser } from '@/lib/session'
 
 export const metadata: Metadata = {
     title: 'Edit Profile',
@@ -14,10 +16,15 @@ export const metadata: Metadata = {
     },
 }
 
-export default function EditProfilePage() {
+export default async function EditProfilePage() {
+    const user = await getCurrentUser()
+    if (!user) {
+        redirect('/login?callbackUrl=%2Fedit')
+    }
+
     return (
         <main className="p-4">
-            <Edit />
+            <Edit ownerEmail={user.email} />
         </main>
     )
 }

@@ -4,21 +4,17 @@ import { profile } from '@/db/schema/profile'
 import { eq } from 'drizzle-orm'
 import { profileSchema } from '@/lib/validation'
 import * as yup from 'yup'
+import { getCurrentUser } from '@/lib/session'
 
 // This route serves ProfileKit's single, global profile row (id = 1) —
-// there is no user table or session, so there is no cross-user IDOR
+// there is no multi-tenant data model, so there is no cross-user IDOR
 // surface here: every request reads or writes the same one record.
 //
-// SECURITY NOTE (flagged, not fixed here): POST below has no
-// authentication, so on a public deployment any visitor who knows this
-// endpoint can overwrite the displayed profile directly via the API,
-// bypassing the UI. Adding real auth (login, session, or a signed admin
-// token wired through the /edit form) is a product decision beyond the
-// scope of this audit pass and is called out separately for a human
-// decision before this app is deployed with a publicly writable
-// database.
+// GET is intentionally open: the profile view is meant to be public, the
+// same way a portfolio page is. POST requires a real, authenticated
+// session (see src/lib/auth.ts) — only the signed-in owner can write.
 
-// GET handler - fetch current profile
+// GET handler - fetch current profile (public)
 export async function GET() {
     try {
         const result = await db.select().from(profile).where(eq(profile.id, 1)) // assuming static id = 1
@@ -32,8 +28,13 @@ export async function GET() {
     }
 }
 
-// POST handler - update profile
+// POST handler - update profile (owner only)
 export async function POST(req: NextRequest) {
+    const user = await getCurrentUser()
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     try {
         const body = await req.json()
         const validated = await profileSchema.validate(body, {

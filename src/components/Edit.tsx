@@ -6,6 +6,7 @@ import { profileSchema } from '@/lib/validation'
 import * as yup from 'yup'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { signOut } from 'next-auth/react'
 
 type TFormData = yup.InferType<typeof profileSchema>
 
@@ -19,7 +20,11 @@ const FIELDS: {
     { name: 'headline', label: 'Headline' },
 ]
 
-export const Edit = () => {
+interface EditProps {
+    ownerEmail: string
+}
+
+export const Edit = ({ ownerEmail }: EditProps) => {
     const [defaultValues, setDefaultValues] = useState<TFormData | null>(null)
 
     const {
@@ -51,6 +56,9 @@ export const Edit = () => {
         if (res.ok) {
             toast.success('Profile updated successfully!')
             window.location.href = '/'
+        } else if (res.status === 401) {
+            toast.error('Your session expired. Please log in again.')
+            window.location.href = '/login?callbackUrl=%2Fedit'
         } else {
             toast.error('Something went wrong. Please try again.')
         }
@@ -65,11 +73,20 @@ export const Edit = () => {
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md border text-gray-800">
-            <h1 className="text-xl font-semibold mb-2">Edit your profile</h1>
+            <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="text-xl font-semibold">Edit your profile</h1>
+                <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="text-sm text-gray-700 underline hover:text-gray-900 shrink-0"
+                >
+                    Log out
+                </button>
+            </div>
             <p className="text-sm text-gray-700 mb-6">
-                Update the details shown on your public profile. Changes save
-                immediately and appear on your profile page as soon as you
-                hit save.
+                Signed in as {ownerEmail}. Update the details shown on your
+                public profile — changes save immediately and appear on your
+                profile page as soon as you hit save.
             </p>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
                 {FIELDS.map(({ name, label }) => {

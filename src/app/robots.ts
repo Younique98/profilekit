@@ -22,10 +22,11 @@ const AI_CRAWLERS = [
   "Meta-ExternalAgent",
 ];
 
-// /edit is the profile-editing form, not public content — keep it out of
-// search/AI-crawler indexes the same way any settings/dashboard route
-// would be, while still allowing the public profile view at "/".
-const DISALLOWED_PATHS = ["/edit"];
+// /edit and /login are the owner's editing/auth surface, not public
+// content — keep them out of search/AI-crawler indexes the same way any
+// settings/dashboard route would be, while still allowing the public
+// profile view at "/".
+const DISALLOWED_PATHS = ["/edit", "/login", "/api/"];
 
 export default function robots(): MetadataRoute.Robots {
   return {
