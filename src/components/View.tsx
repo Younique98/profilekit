@@ -1,3 +1,5 @@
+'use client'
+
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
@@ -21,14 +23,19 @@ export const View = () => {
             .then(setData)
     }, [])
 
-    if (!data) return <div className="text-center mt-10">Loading...</div>
+    if (!data)
+        return (
+            <div className="text-center mt-10" role="status">
+                Loading profile…
+            </div>
+        )
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md border text-gray-800">
             <div className="flex flex-col items-center">
                 <Image
                     src={data.image_url}
-                    alt="Profile"
+                    alt={`${data.name}'s profile photo`}
                     width={200}
                     height={300}
                     className="w-28 h-28 rounded-full object-cover mb-4"
@@ -45,11 +52,10 @@ export const View = () => {
             </div>
             <button
                 type="button"
-                className="rounded-md mt-2 bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="rounded-md mt-2 bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 onClick={() => router.push('/edit')}
             >
-                {' '}
-                Edit Your Profile
+                Edit your profile
             </button>
         </div>
     )
