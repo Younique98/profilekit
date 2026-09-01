@@ -6,10 +6,25 @@ import { profileSchema } from '@/lib/validation'
 import * as yup from 'yup'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { signOut } from 'next-auth/react'
 
 type TFormData = yup.InferType<typeof profileSchema>
 
-export const Edit = () => {
+const FIELDS: {
+    name: keyof TFormData
+    label: string
+}[] = [
+    { name: 'name', label: 'Name' },
+    { name: 'location', label: 'Location' },
+    { name: 'image_url', label: 'Image URL' },
+    { name: 'headline', label: 'Headline' },
+]
+
+interface EditProps {
+    ownerEmail: string
+}
+
+export const Edit = ({ ownerEmail }: EditProps) => {
     const [defaultValues, setDefaultValues] = useState<TFormData | null>(null)
 
     const {
@@ -34,50 +49,100 @@ export const Edit = () => {
     const onSubmit = async (data: TFormData) => {
         const res = await fetch('/api/profile', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         })
 
         if (res.ok) {
             toast.success('Profile updated successfully!')
             window.location.href = '/'
+        } else if (res.status === 401) {
+            toast.error('Your session expired. Please log in again.')
+            window.location.href = '/login?callbackUrl=%2Fedit'
         } else {
             toast.error('Something went wrong. Please try again.')
         }
     }
 
-    if (!defaultValues) return <p className="text-center mt-10">Loading...</p>
+    if (!defaultValues)
+        return (
+            <p className="text-center mt-10" role="status">
+                Loading your profile…
+            </p>
+        )
 
     return (
         <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md border text-gray-800">
-            <h1 className="text-xl font-semibold mb-6">Edit Your Profile</h1>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {['name', 'location', 'imageUrl', 'headline'].map((field) => (
-                    <div key={field}>
-                        <label className="block text-sm font-medium text-black mb-1 capitalize">
-                            {field}
-                        </label>
-                        <input
-                            {...register(field as keyof TFormData)}
-                            className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        {errors[field as keyof TFormData] && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors[field as keyof TFormData]?.message}
-                            </p>
-                        )}
-                    </div>
-                ))}
+            <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="text-xl font-semibold">Edit your profile</h1>
+                <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="text-sm text-gray-700 underline hover:text-gray-900 shrink-0"
+                >
+                    Log out
+                </button>
+            </div>
+            <p className="text-sm text-gray-700 mb-6">
+                Signed in as {ownerEmail}. Update the details shown on your
+                public profile — changes save immediately and appear on your
+                profile page as soon as you hit save.
+            </p>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+                {FIELDS.map(({ name, label }) => {
+                    const fieldId = `profile-${name}`
+                    const errorId = `${fieldId}-error`
+                    const error = errors[name]
+                    return (
+                        <div key={name}>
+                            <label
+                                htmlFor={fieldId}
+                                className="block text-sm font-medium text-black mb-1"
+                            >
+                                {label}
+                            </label>
+                            <input
+                                id={fieldId}
+                                {...register(name)}
+                                aria-invalid={error ? 'true' : undefined}
+                                aria-describedby={error ? errorId : undefined}
+                                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            {error && (
+                                <p
+                                    id={errorId}
+                                    role="alert"
+                                    className="text-red-700 text-sm mt-1"
+                                >
+                                    {error.message}
+                                </p>
+                            )}
+                        </div>
+                    )
+                })}
 
                 <div>
-                    <label className="block text-sm font-medium text-black mb-1">
+                    <label
+                        htmlFor="profile-bio"
+                        className="block text-sm font-medium text-black mb-1"
+                    >
                         About Me
                     </label>
                     <textarea
+                        id="profile-bio"
                         {...register('bio')}
+                        aria-invalid={errors.bio ? 'true' : undefined}
+                        aria-describedby={
+                            errors.bio ? 'profile-bio-error' : undefined
+                        }
                         className="w-full border border-gray-300 rounded px-4 py-2 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {errors.bio && (
-                        <p className="text-red-500 text-sm mt-1">
+                        <p
+                            id="profile-bio-error"
+                            role="alert"
+                            className="text-red-700 text-sm mt-1"
+                        >
                             {errors.bio.message}
                         </p>
                     )}
@@ -85,7 +150,6 @@ export const Edit = () => {
 
                 <button
                     type="submit"
-                    onClick={() => onSubmit}
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition w-full"
                 >
                     Save

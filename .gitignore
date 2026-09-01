@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# turso
+# turso / local sqlite artifacts (never commit a local DB file to the repo)
 dev.db
 dev.db*
+project.db
+*.db
+*.db-journal
